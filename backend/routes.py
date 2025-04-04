@@ -17,25 +17,25 @@ def create_task():
    try: 
       data = request.json
 
-      required_fields = ["name", "time due", "description", "importance"]
+      required_fields = ["name", "time_due", "description", "importance"]
       for field in required_fields:
-         if field not in data:
+         if field not in data or not data.get(field):
             return jsonify({"error": f'Missing required field: {field}'}), 400
 
       name = data.get("name")
-      time_due = data.get("time due")
+      time_due = data.get("time_due")
       description = data.get("description")
       importance = data.get("importance")
 
       #avatar image will be based on initails of name
       img_url = f"https://avatar.iran.liara.run/username?username={name}"
 
-      new_task = Task(name=name, time_due="time due", description= description, importance=importance, img_url=img_url)
+      new_task = Task(name=name, time_due= time_due, description= description, importance=importance, img_url=img_url)
 
       db.session.add(new_task)
       db.session.commit()
 
-      return jsonify({"msg":"task created successfully"}), 201
+      return jsonify(new_task.to_json()), 201
       #201 for resource created
    
    except Exception as e:
@@ -69,7 +69,7 @@ def update_task(id):
       data = request.json
 
       task.name = data.get("name", task.name)
-      task.time_due = data.get("time due", task.time_due)
+      task.time_due = data.get("time_due", task.time_due)
       task.description = data.get("description", task.description)
       task.importance = data.get("importance", task.importance)
 
